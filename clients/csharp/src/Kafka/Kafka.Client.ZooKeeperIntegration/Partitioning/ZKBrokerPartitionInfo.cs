@@ -21,12 +21,14 @@ namespace Kafka.Client.ZooKeeperIntegration.Partitioning
 	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.Linq;
 	using System.Reflection;
 	using System.Threading;
 
 	using Kafka.Client.Utils;
 	using Kafka.Client.ZooKeeperIntegration.Cluster;
 	using Kafka.Client.ZooKeeperIntegration.Configuration;
+	using Kafka.Client.ZooKeeperIntegration.Entities;
 	using Kafka.Client.ZooKeeperIntegration.Events;
 	using Kafka.Client.ZooKeeperIntegration.Listeners;
 	using Kafka.Client.ZooKeeperIntegration.Serialization;
@@ -214,10 +216,9 @@ namespace Kafka.Client.ZooKeeperIntegration.Partitioning
                 string path = ZooKeeperClient.DefaultBrokerIdsPath + "/" + brokerId;
                 int id = int.Parse(brokerId, CultureInfo.InvariantCulture);
                 var info = this.zkclient.ReadData<string>(path, null);
-                string[] parts = info.Split(':');
-                int port = int.Parse(parts[2], CultureInfo.InvariantCulture);
-                this.brokers.Add(id, new Broker(id, parts[0], parts[1], port));
-            }
+	            var brokerInfo = info.DeserializeAs<BrokerRegistrationInfo>();
+				this.brokers.Add(id, new Broker(id, string.Empty, brokerInfo.Host, brokerInfo.Port));
+			}
         }
 
         /// <summary>
@@ -238,28 +239,17 @@ namespace Kafka.Client.ZooKeeperIntegration.Partitioning
             IList<string> topics = this.zkclient.GetChildrenParentMayNotExist(ZooKeeperClient.DefaultBrokerTopicsPath);
             foreach (string topic in topics)
             {
-                string brokerTopicPath = ZooKeeperClient.DefaultBrokerTopicsPath + "/" + topic;
-                IList<string> brokersPerTopic = this.zkclient.GetChildrenParentMayNotExist(brokerTopicPath);
-                var brokerPartitions = new SortedDictionary<int, int>();
-                foreach (string brokerId in brokersPerTopic)
-                {
-                    string path = brokerTopicPath + "/" + brokerId;
-                    var numPartitionsPerBrokerAndTopic = this.zkclient.ReadData<string>(path);
-                    brokerPartitions.Add(int.Parse(brokerId, CultureInfo.InvariantCulture), int.Parse(numPartitionsPerBrokerAndTopic, CultureInfo.CurrentCulture));
-                }
+				string brokerTopicPath = ZooKeeperClient.DefaultBrokerTopicsPath + "/" + topic;
 
-                var brokerParts = new SortedSet<Partition>();
-                foreach (var brokerPartition in brokerPartitions)
-                {
-                    for (int i = 0; i < brokerPartition.Value; i++)
-                    {
-                        var bidPid = new Partition(brokerPartition.Key, i);
-                        brokerParts.Add(bidPid);
-                    }
-                }
+				var topicRegistrationInfoJson = this.zkclient.ReadData<string>(brokerTopicPath, null);
+				var topicRegistrationInfo = topicRegistrationInfoJson.DeserializeAs<TopicRegistrationInfo>();
 
-                this.topicBrokerPartitions.Add(topic, brokerParts);
-            }
+				// convert a {partition, brokerList} collection to sorted {broker, partition} collection
+				var brokerParts = new SortedSet<Partition>(topicRegistrationInfo.Partitions.SelectMany(
+					p => p.Value.Select(v => new Partition(v, int.Parse(p.Key)))).OrderBy(p => p.BrokerId));
+
+				this.topicBrokerPartitions.Add(topic, brokerParts);
+			}
         }
 
         /// <summary>

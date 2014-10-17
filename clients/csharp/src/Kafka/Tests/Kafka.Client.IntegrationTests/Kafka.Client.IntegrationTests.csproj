@@ -109,10 +109,10 @@
     <Compile Include="TestHelper.cs" />
     <Compile Include="TestsSetup.cs" />
     <Compile Include="TestMultipleBrokersHelper.cs" />
-    <Compile Include="ZKBrokerPartitionInfoTests.cs" />
     <Compile Include="ZooKeeperAwareProducerTests.cs" />
-    <Compile Include="ZooKeeperClientTests.cs" />
-    <Compile Include="ZooKeeperConnectionTests.cs" />
+    <Compile Include="ZooKeeperIntegration\ZKBrokerPartitionInfoTests.cs" />
+    <Compile Include="ZooKeeperIntegration\ZooKeeperClientTests.cs" />
+    <Compile Include="ZooKeeperIntegration\ZooKeeperConnectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Kafka.Client.ZooKeeperIntegration\Kafka.Client.ZooKeeperIntegration.csproj">
