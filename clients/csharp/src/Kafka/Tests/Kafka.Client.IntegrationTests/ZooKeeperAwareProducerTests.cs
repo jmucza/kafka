@@ -16,7 +16,7 @@
  */
 
 using System.ComponentModel;
-using Kafka.Client.Producers.Partitioning;
+
 using Kafka.Client.Utils;
 using Kafka.Client.ZooKeeperIntegration;
 
@@ -32,10 +32,12 @@ namespace Kafka.Client.IntegrationTests
     using Kafka.Client.Producers;
     using Kafka.Client.Requests;
     using Kafka.Client.Serialization;
-    using NUnit.Framework;
     using Kafka.Client.ZooKeeperIntegration.Events;
+    using Kafka.Client.ZooKeeperIntegration.Partitioning;
 
-    [TestFixture]
+    using NUnit.Framework;
+
+	[TestFixture]
     public class ZooKeeperAwareProducerTests : IntegrationFixtureBase
     {
         /// <summary>
@@ -274,7 +276,7 @@ namespace Kafka.Client.IntegrationTests
                     ReflectionHelper.GetInstanceField<IBrokerPartitionInfo>("brokerPartitionInfo", producer);
                 IZooKeeperClient zkclient = ReflectionHelper.GetInstanceField<IZooKeeperClient>(
                         "zkclient", brokerPartitionInfo);
-                var sessionCreatedHandler = ReflectionHelper.GetInstanceField<ZooKeeperClient.ZooKeeperEventHandler<ZooKeeperSessionCreatedEventArgs>>("sessionCreatedHandlers", zkclient);
+                var sessionCreatedHandler = ReflectionHelper.GetInstanceField<ZooKeeperEventHandler<ZooKeeperSessionCreatedEventArgs>>("sessionCreatedHandlers", zkclient);
                 sessionCreatedHandler.Invoke(ZooKeeperSessionCreatedEventArgs.Empty);
                 Thread.Sleep(1000);
             }

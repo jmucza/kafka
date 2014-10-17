@@ -19,10 +19,13 @@ namespace Kafka.Client.IntegrationTests
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Kafka.Client.Cluster;
+
     using Kafka.Client.Consumers;
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Serialization;
+
     using NUnit.Framework;
 
     [TestFixture]

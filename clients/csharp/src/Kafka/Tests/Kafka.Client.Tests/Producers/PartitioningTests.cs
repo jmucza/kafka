@@ -18,8 +18,10 @@
 namespace Kafka.Client.Tests.Producers
 {
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Producers.Partitioning;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Partitioning;
+
     using NUnit.Framework;
     using System.Collections.Generic;
 

@@ -23,8 +23,9 @@ namespace Kafka.Client.Consumers
     using System.Reflection;
     using System.Threading;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.ZooKeeperIntegration;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+
     using log4net;
 
     /// <summary>

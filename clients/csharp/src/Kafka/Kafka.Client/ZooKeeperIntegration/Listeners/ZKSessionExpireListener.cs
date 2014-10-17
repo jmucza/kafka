@@ -23,10 +23,12 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
     using Kafka.Client.Consumers;
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration.Events;
+    using Kafka.Client.ZooKeeperIntegration.Utils;
+
     using log4net;
     using ZooKeeperNet;
 
-    internal class ZKSessionExpireListener : IZooKeeperStateListener
+    public class ZKSessionExpireListener : IZooKeeperStateListener
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

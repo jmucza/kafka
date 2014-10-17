@@ -26,8 +26,9 @@ namespace Kafka.Client.Cfg
     using Kafka.Client.Utils;
     using System.Xml.Linq;
 
+    using Kafka.Client.ZooKeeperIntegration.Configuration;
 
-    /// <summary>
+	/// <summary>
     /// High-level API configuration for the producer
     /// </summary>
     public class ProducerConfiguration : ISyncProducerConfigShared, IAsyncProducerConfigShared

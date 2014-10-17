@@ -4,7 +4,6 @@ namespace Kafka.Client.IntegrationTests
     using Kafka.Client.Cfg;
     using System.Collections.Generic;
 
-    using Kafka.Client.Cluster;
     using Kafka.Client.Producers.Sync;
     using Kafka.Client.Messages;
     using System.Text;
@@ -14,7 +13,9 @@ namespace Kafka.Client.IntegrationTests
     using System.Collections.Concurrent;
     using System.Threading;
 
-    [TestFixture]
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+
+	[TestFixture]
     public class FetcherTests : IntegrationFixtureBase
     {
         [Test]

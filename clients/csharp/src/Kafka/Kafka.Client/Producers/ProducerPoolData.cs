@@ -18,9 +18,10 @@
 namespace Kafka.Client.Producers
 {
     using System.Collections.Generic;
-    using Kafka.Client.Cluster;
 
-    /// <summary>
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+
+	/// <summary>
     /// Encapsulates data to be send on chosen partition
     /// </summary>
     /// <typeparam name="TData">

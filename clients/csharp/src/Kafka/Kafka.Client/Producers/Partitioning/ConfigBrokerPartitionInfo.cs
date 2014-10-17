@@ -21,10 +21,11 @@ namespace Kafka.Client.Producers.Partitioning
     using System.Collections.Generic;
     using System.Globalization;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Utils;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Partitioning;
 
-    /// <summary>
+	/// <summary>
     /// Fetch broker info like ID, host and port from configuration.
     /// </summary>
     /// <remarks>

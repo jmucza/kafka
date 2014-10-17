@@ -19,11 +19,15 @@ namespace Kafka.Client.IntegrationTests
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Kafka.Client.Cluster;
+
     using Kafka.Client.Producers.Partitioning;
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
     using Kafka.Client.ZooKeeperIntegration.Listeners;
+    using Kafka.Client.ZooKeeperIntegration.Partitioning;
+    using Kafka.Client.ZooKeeperIntegration.Serialization;
+
     using NUnit.Framework;
     using ZooKeeperNet;
     using System.Threading;
@@ -40,7 +44,7 @@ namespace Kafka.Client.IntegrationTests
             var prodConfigNotZk = this.ConfigBasedSyncProdConfig;
 
             IDictionary<int, Broker> allBrokerInfo;
-            using (var brokerPartitionInfo = new ZKBrokerPartitionInfo(prodConfig, null))
+            using (var brokerPartitionInfo = new ZKBrokerPartitionInfo(prodConfig.ZooKeeper, null))
             {
                 allBrokerInfo = brokerPartitionInfo.GetAllBrokerInfo();
             }
@@ -57,7 +61,7 @@ namespace Kafka.Client.IntegrationTests
         {
             var prodconfig = this.ZooKeeperBasedSyncProdConfig;
             SortedSet<Partition> partitions;
-            using (var brokerPartitionInfo = new ZKBrokerPartitionInfo(prodconfig, null))
+            using (var brokerPartitionInfo = new ZKBrokerPartitionInfo(prodconfig.ZooKeeper, null))
             {
                 partitions = brokerPartitionInfo.GetBrokerPartitionInfo("test");
             }
@@ -72,7 +76,7 @@ namespace Kafka.Client.IntegrationTests
             var prodConfig = this.ZooKeeperBasedSyncProdConfig;
             var prodConfigNotZk = this.ConfigBasedSyncProdConfig;
 
-            using (var brokerPartitionInfo = new ZKBrokerPartitionInfo(prodConfig, null))
+            using (var brokerPartitionInfo = new ZKBrokerPartitionInfo(prodConfig.ZooKeeper, null))
             {
                 var testBroker = prodConfigNotZk.Brokers[0];
                 Broker broker = brokerPartitionInfo.GetBrokerInfo(testBroker.BrokerId);

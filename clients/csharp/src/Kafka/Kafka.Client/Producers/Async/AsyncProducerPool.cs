@@ -25,11 +25,12 @@ namespace Kafka.Client.Producers.Async
     using System.Linq;
     using System.Reflection;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Messages;
     using Kafka.Client.Requests;
     using Kafka.Client.Serialization;
     using Kafka.Client.Utils;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+
     using log4net;
 
     /// <summary>

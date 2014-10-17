@@ -19,9 +19,10 @@ namespace Kafka.Client.Producers
 {
     using System;
     using System.Collections.Generic;
-    using Kafka.Client.Cluster;
 
-    /// <summary>
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+
+	/// <summary>
     /// Pool of producers used by producer high-level API
     /// </summary>
     /// <typeparam name="TData">The type of the data.</typeparam>

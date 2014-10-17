@@ -25,15 +25,17 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
     using System.Reflection;
     using System.Threading;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Consumers;
     using Kafka.Client.Exceptions;
     using Kafka.Client.Utils;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
     using Kafka.Client.ZooKeeperIntegration.Events;
+    using Kafka.Client.ZooKeeperIntegration.Utils;
+
     using log4net;
     using ZooKeeperNet;
 
-    internal class ZKRebalancerListener : IZooKeeperChildListener
+    public class ZKRebalancerListener : IZooKeeperChildListener
     {
         private IDictionary<string, IList<string>> oldPartitionsPerTopicMap = new Dictionary<string, IList<string>>();
 

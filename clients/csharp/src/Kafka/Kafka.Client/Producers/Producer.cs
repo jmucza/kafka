@@ -25,13 +25,15 @@ namespace Kafka.Client.Producers
     using System.Linq;
     using System.Reflection;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Messages;
     using Kafka.Client.Producers.Async;
     using Kafka.Client.Producers.Partitioning;
     using Kafka.Client.Requests;
     using Kafka.Client.Serialization;
     using Kafka.Client.Utils;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Partitioning;
+
     using log4net;
 
     /// <summary>
@@ -83,7 +85,7 @@ namespace Kafka.Client.Producers
             this.producerPool = producerPool;
             if (this.config.IsZooKeeperEnabled)
             {
-                this.brokerPartitionInfo = new ZKBrokerPartitionInfo(this.config, this.Callback);
+                this.brokerPartitionInfo = new ZKBrokerPartitionInfo(this.config.ZooKeeper, this.Callback);
             }
             else
             {

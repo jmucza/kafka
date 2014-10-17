@@ -24,11 +24,13 @@ namespace Kafka.Client.Consumers
     using System.Reflection;
     using System.Threading;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Messages;
     using Kafka.Client.Requests;
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Utils;
+
     using log4net;
 
     /// <summary>

@@ -24,8 +24,9 @@ namespace Kafka.Client.Cfg
     using System.Text;
     using System.Xml.Linq;
 
+    using Kafka.Client.ZooKeeperIntegration.Configuration;
 
-    /// <summary>
+	/// <summary>
     /// Configuration used by the consumer
     /// </summary>
     public class ConsumerConfiguration

@@ -25,7 +25,7 @@ namespace Kafka.Client.Consumers
     using System.Web.Script.Serialization;
     using log4net;
 
-    internal class TopicCount
+    public class TopicCount
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

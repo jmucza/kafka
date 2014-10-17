@@ -21,8 +21,9 @@ namespace Kafka.Client.Cfg
     using Kafka.Client.Producers;
     using System.Xml.Linq;
 
+    using Kafka.Client.ZooKeeperIntegration.Configuration;
 
-    public class ProducerConfigurationSection : ConfigurationSection
+	public class ProducerConfigurationSection : ConfigurationSection
     {
         [ConfigurationProperty(
             "type",

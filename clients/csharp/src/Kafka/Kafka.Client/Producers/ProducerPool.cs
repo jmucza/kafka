@@ -20,13 +20,13 @@ namespace Kafka.Client.Producers
     using System;
     using System.Collections.Generic;
     using Kafka.Client.Cfg;
-    using Kafka.Client.Cluster;
     using Kafka.Client.Producers.Async;
     using Kafka.Client.Producers.Sync;
     using Kafka.Client.Serialization;
     using Kafka.Client.Utils;
+    using Kafka.Client.ZooKeeperIntegration.Cluster;
 
-    /// <summary>
+	/// <summary>
     /// The base for all classes that represents pool of producers used by high-level API
     /// </summary>
     /// <typeparam name="TData">The type of the data.</typeparam>

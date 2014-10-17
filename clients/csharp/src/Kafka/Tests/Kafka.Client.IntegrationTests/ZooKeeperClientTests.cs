@@ -26,7 +26,10 @@ namespace Kafka.Client.IntegrationTests
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
     using Kafka.Client.ZooKeeperIntegration.Events;
+    using Kafka.Client.ZooKeeperIntegration.Excepttions;
     using Kafka.Client.ZooKeeperIntegration.Listeners;
+    using Kafka.Client.ZooKeeperIntegration.Serialization;
+
     using log4net;
     using NUnit.Framework;
     using ZooKeeperNet;

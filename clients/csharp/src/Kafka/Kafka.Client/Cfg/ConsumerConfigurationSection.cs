@@ -20,8 +20,9 @@ namespace Kafka.Client.Cfg
     using Kafka.Client.Requests;
     using System.Xml.Linq;
 
+    using Kafka.Client.ZooKeeperIntegration.Configuration;
 
-    public class ConsumerConfigurationSection : ConfigurationSection
+	public class ConsumerConfigurationSection : ConfigurationSection
     {
         [ConfigurationProperty("numberOfTries", IsRequired = false, DefaultValue = ConsumerConfiguration.DefaultNumberOfTries)]
         public short NumberOfTries

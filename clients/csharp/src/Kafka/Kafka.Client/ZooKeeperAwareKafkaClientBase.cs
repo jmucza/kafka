@@ -17,9 +17,9 @@
 
 namespace Kafka.Client
 {
-    using Kafka.Client.Cfg;
+    using Kafka.Client.ZooKeeperIntegration.Configuration;
 
-    /// <summary>
+	/// <summary>
     /// A base class for all Kafka clients that support ZooKeeper based automatic broker discovery
     /// </summary>
     public abstract class ZooKeeperAwareKafkaClientBase : KafkaClientBase
