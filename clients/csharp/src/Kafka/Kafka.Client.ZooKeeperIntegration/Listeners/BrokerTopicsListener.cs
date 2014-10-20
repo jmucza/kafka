@@ -67,7 +67,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             Logger.Debug("Creating broker topics listener to watch the following paths - \n"
                 + "/broker/topics, /broker/topics/topic, /broker/ids");
             Logger.Debug("Initialized this broker topics listener with initial mapping of broker id to "
-                + "partition id per topic with " + Extensions.ToMultiString(this.oldBrokerTopicsPartitionsMap, x => x.Key + " --> " + Extensions.ToMultiString<Partition>(x.Value, y => y.ToString(), ","), "; "));
+                + "partition id per topic with " + this.oldBrokerTopicsPartitionsMap.ToMultiString(x => x.Key + " --> " + x.Value.ToMultiString(y => y.ToString(), ","), "; "));
         }
 
         /// <summary>
@@ -95,9 +95,9 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                             List<string> oldTopics = this.oldBrokerTopicsPartitionsMap.Keys.ToList();
                             List<string> newTopics = childs.Except(oldTopics).ToList();
                             Logger.Debug("List of topics was changed at " + e.Path);
-                            Logger.Debug("Current topics -> " + Extensions.ToMultiString(e.Children, ","));
-                            Logger.Debug("Old list of topics -> " + Extensions.ToMultiString(oldTopics, ","));
-                            Logger.Debug("List of newly registered topics -> " + Extensions.ToMultiString(newTopics, ","));
+                            Logger.Debug("Current topics -> " + e.Children.ToMultiString(","));
+                            Logger.Debug("Old list of topics -> " + oldTopics.ToMultiString(","));
+                            Logger.Debug("List of newly registered topics -> " + newTopics.ToMultiString(","));
                             foreach (var newTopic in newTopics)
                             {
                                 string brokerTopicPath = ZooKeeperClient.DefaultBrokerTopicsPath + "/" + newTopic;
@@ -109,7 +109,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                             break;
                         case ZooKeeperClient.DefaultBrokerIdsPath:
                             Logger.Debug("List of brokers changed in the Kafka cluster " + e.Path);
-                            Logger.Debug("Currently registered list of brokers -> " + Extensions.ToMultiString(e.Children, ","));
+                            Logger.Debug("Currently registered list of brokers -> " + e.Children.ToMultiString(","));
                             this.ProcessBrokerChange(path, childs);
                             break;
                         default:
@@ -120,7 +120,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                                 Logger.Debug("List of brokers changed at " + path);
                                 Logger.Debug(
                                     "Currently registered list of brokers for topic " + topic + " -> " +
-                                    Extensions.ToMultiString(childs, ","));
+                                    childs.ToMultiString(","));
                                 this.ProcessNewBrokerInExistingTopic(topic, childs);
                             }
 
@@ -143,15 +143,15 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
         public void ResetState()
         {
             Logger.Debug("Before reseting broker topic partitions state -> " 
-                + Extensions.ToMultiString(this.oldBrokerTopicsPartitionsMap, x => x.Key + " --> " + Extensions.ToMultiString<Partition>(x.Value, y => y.ToString(), ","), "; "));
+                + this.oldBrokerTopicsPartitionsMap.ToMultiString(x => x.Key + " --> " + x.Value.ToMultiString(y => y.ToString(), ","), "; "));
             this.oldBrokerTopicsPartitionsMap = this.actualBrokerTopicsPartitionsMap;
             Logger.Debug("After reseting broker topic partitions state -> "
-                + Extensions.ToMultiString(this.oldBrokerTopicsPartitionsMap, x => x.Key + " --> " + Extensions.ToMultiString<Partition>(x.Value, y => y.ToString(), ","), "; "));
+                + this.oldBrokerTopicsPartitionsMap.ToMultiString(x => x.Key + " --> " + x.Value.ToMultiString(y => y.ToString(), ","), "; "));
             Logger.Debug("Before reseting broker id map state -> "
-                + Extensions.ToMultiString(this.oldBrokerIdMap, ", "));
+                + this.oldBrokerIdMap.ToMultiString(", "));
             this.oldBrokerIdMap = this.actualBrokerIdMap;
             Logger.Debug("After reseting broker id map state -> "
-                + Extensions.ToMultiString(this.oldBrokerIdMap, ", "));
+                + this.oldBrokerIdMap.ToMultiString(", "));
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
         {
             if (this.oldBrokerTopicsPartitionsMap.ContainsKey(topic))
             {
-                Logger.Debug("Old list of brokers -> " + Extensions.ToMultiString(this.oldBrokerTopicsPartitionsMap[topic], x => x.BrokerId.ToString(), ","));
+                Logger.Debug("Old list of brokers -> " + this.oldBrokerTopicsPartitionsMap[topic].ToMultiString(x => x.BrokerId.ToString(), ","));
             }
 
             var updatedBrokers = new SortedSet<int>(childs.Select(x => int.Parse(x, CultureInfo.InvariantCulture)));
@@ -186,13 +186,13 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 }
             }
 
-            Logger.Debug("Currently registered list of brokers for topic " + topic + " -> " + Extensions.ToMultiString(childs, ", "));
+            Logger.Debug("Currently registered list of brokers for topic " + topic + " -> " + childs.ToMultiString(", "));
             SortedSet<Partition> mergedBrokerParts = updatedBrokerParts;
             if (this.actualBrokerTopicsPartitionsMap.ContainsKey(topic))
             {
                 SortedSet<Partition> oldBrokerParts = this.actualBrokerTopicsPartitionsMap[topic];
                 Logger.Debug(
-                    "Unregistered list of brokers for topic " + topic + " -> " + Extensions.ToMultiString(oldBrokerParts, ", "));
+                    "Unregistered list of brokers for topic " + topic + " -> " + oldBrokerParts.ToMultiString(", "));
                 foreach (var oldBrokerPart in oldBrokerParts)
                 {
                     mergedBrokerParts.Add(oldBrokerPart);
@@ -221,7 +221,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             List<int> updatedBrokers = childs.Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToList();
             List<int> oldBrokers = this.oldBrokerIdMap.Select(x => x.Key).ToList();
             List<int> newBrokers = updatedBrokers.Except(oldBrokers).ToList();
-            Logger.Debug("List of newly registered brokers -> " + Extensions.ToMultiString(newBrokers, ","));
+            Logger.Debug("List of newly registered brokers -> " + newBrokers.ToMultiString(","));
             foreach (int bid in newBrokers)
             {
                 string brokerInfo = this.zkclient.ReadData<string>(ZooKeeperClient.DefaultBrokerIdsPath + "/" + bid);
@@ -236,7 +236,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             }
 
             List<int> deadBrokers = oldBrokers.Except(updatedBrokers).ToList();
-            Logger.Debug("Deleting broker ids for dead brokers -> " + Extensions.ToMultiString(deadBrokers, ","));
+            Logger.Debug("Deleting broker ids for dead brokers -> " + deadBrokers.ToMultiString(","));
             foreach (int bid in deadBrokers)
             {
                 Logger.Debug("Deleting dead broker: " + bid);
@@ -247,7 +247,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                     if (affected > 0)
                     {
                         Logger.Debug("Removing dead broker " + bid + " for topic: " + topicMap.Key);
-                        Logger.Debug("Actual list of mapped brokers is -> " + Extensions.ToMultiString(topicMap.Value, x => x.ToString(), ","));
+                        Logger.Debug("Actual list of mapped brokers is -> " + topicMap.Value.ToMultiString(x => x.ToString(), ","));
                     }
                 }
             }
