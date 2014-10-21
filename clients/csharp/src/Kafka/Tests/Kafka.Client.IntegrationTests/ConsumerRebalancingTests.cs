@@ -33,7 +33,7 @@ namespace Kafka.Client.IntegrationTests
     public class ConsumerRebalancingTests : IntegrationFixtureBase
     {
         [Test]
-        public void ConsumerPorformsRebalancingOnStart()
+        public void ConsumerPerformsRebalancingOnStart()
         {
             var config = this.ZooKeeperBasedConsumerConfig;
             using (var consumerConnector = new ZookeeperConsumerConnector(config, true))

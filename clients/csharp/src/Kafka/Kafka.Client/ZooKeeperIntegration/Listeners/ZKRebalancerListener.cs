@@ -264,7 +264,8 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             foreach (var partitionOwner in partitionOwnershipDecision)
             {
                 var topic = partitionOwner.Key.Item1;
-                var partition = partitionOwner.Key.Item2;
+	            var item2 = partitionOwner.Key.Item2.Split('-');
+	            var partition = item2[1];
                 var consumerThreadId = partitionOwner.Value;
                 var topicDirs = new ZKGroupTopicDirs(config.GroupId, topic);
                 var partitionOwnerPath = topicDirs.ConsumerOwnerDir + "/" + partition;

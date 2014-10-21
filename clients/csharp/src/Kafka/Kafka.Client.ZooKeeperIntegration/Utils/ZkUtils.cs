@@ -85,17 +85,18 @@ namespace Kafka.Client.ZooKeeperIntegration.Utils
 
 	            var partitions = zkClient.GetChildrenParentMayNotExist(topicDirs.TopicPartitionsDir);
 
-	            var partList = new List<string>();
-	            foreach (var partition in partitions)
-	            {
-		            var partitionState = zkClient.ReadData<string>(topicDirs.GetPartitionStateDir(partition));
-		            var info = partitionState.DeserializeAs<PartitionStateInfo>();
+				var partList = new List<string>();
+				foreach (var partition in partitions)
+				{
+					var partitionState = zkClient.ReadData<string>(topicDirs.GetPartitionStateDir(partition));
+					var info = partitionState.DeserializeAs<PartitionStateInfo>();
 					// for some misterious reason leader and partition id are grouped this way instead of tuple or strong type
-		            partList.Add(info.Leader + "-" + partition);
-	            }
+					partList.Add(info.Leader + "-" + partition);
+					//partList.Add(partition);
+				}
 
-                partList.Sort();
-                result.Add(topic, partList);
+				partList.Sort();
+				result.Add(topic, partList);
             }
 
             return result;
