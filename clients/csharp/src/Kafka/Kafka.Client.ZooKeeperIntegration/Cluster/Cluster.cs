@@ -21,6 +21,9 @@ namespace Kafka.Client.ZooKeeperIntegration.Cluster
 	using System.Collections.Generic;
 	using System.Globalization;
 
+	using Kafka.Client.ZooKeeperIntegration.Entities;
+	using Kafka.Client.ZooKeeperIntegration.Serialization;
+
 	/// <summary>
     /// The set of active brokers in the cluster
     /// </summary>
@@ -94,30 +97,15 @@ namespace Kafka.Client.ZooKeeperIntegration.Cluster
         /// Creates a new Broker object out of a BrokerInfoString
         /// </summary>
         /// <param name="node">node string</param>
-        /// <param name="brokerInfoString">the BrokerInfoString</param>
+        /// <param name="brokerZkString">the zookeeper broker info string</param>
         /// <returns>Broker object</returns>
-        private Broker CreateBroker(string node, string brokerInfoString)
+        private Broker CreateBroker(string node, string brokerZkString)
         {
-            int id;
-            if (int.TryParse(node, NumberStyles.Integer, CultureInfo.InvariantCulture, out id))
+            int brokerId;
+            if (int.TryParse(node, NumberStyles.Integer, CultureInfo.InvariantCulture, out brokerId))
             {
-                var brokerInfo = brokerInfoString.Split(':');
-                if (brokerInfo.Length > 2)
-                {
-                    int port;
-                    if (int.TryParse(brokerInfo[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out port))
-                    {
-                        return new Broker(id, brokerInfo[0], brokerInfo[1], int.Parse(brokerInfo[2], CultureInfo.InvariantCulture));
-                    }
-                    else
-                    {
-                        throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "{0} is not a valid integer", brokerInfo[2]));
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "{0} is not a valid BrokerInfoString", brokerInfoString));
-                }
+	            var brokerInfo = brokerZkString.DeserializeAs<BrokerRegistrationInfo>();
+				return new Broker(brokerId, brokerId.ToString(CultureInfo.InvariantCulture), brokerInfo.Host, brokerInfo.Port);
             }
             else
             {

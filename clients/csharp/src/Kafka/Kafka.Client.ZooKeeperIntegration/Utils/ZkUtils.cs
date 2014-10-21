@@ -18,8 +18,13 @@
 namespace Kafka.Client.ZooKeeperIntegration.Utils
 {
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Globalization;
+	using System.Linq;
 	using System.Reflection;
+
+	using Kafka.Client.ZooKeeperIntegration.Entities;
+	using Kafka.Client.ZooKeeperIntegration.Serialization;
 
 	using log4net;
 
@@ -76,21 +81,18 @@ namespace Kafka.Client.ZooKeeperIntegration.Utils
             var result = new Dictionary<string, IList<string>>();
             foreach (string topic in topics)
             {
-                var partList = new List<string>();
-                var brokers =
-                    zkClient.GetChildrenParentMayNotExist(ZooKeeperClient.DefaultBrokerTopicsPath + "/" + topic);
-                foreach (var broker in brokers)
-                {
-                    var numberOfParts =
-                        int.Parse(
-                            zkClient.ReadData<string>(ZooKeeperClient.DefaultBrokerTopicsPath + "/" + topic + "/" +
-                                                      broker),
-                                                      CultureInfo.CurrentCulture);
-                    for (int i = 0; i < numberOfParts; i++)
-                    {
-                        partList.Add(broker + "-" + i);
-                    }
-                }
+	            var topicDirs = new ZkTopicDirs(topic);
+
+	            var partitions = zkClient.GetChildrenParentMayNotExist(topicDirs.TopicPartitionsDir);
+
+	            var partList = new List<string>();
+	            foreach (var partition in partitions)
+	            {
+		            var partitionState = zkClient.ReadData<string>(topicDirs.GetPartitionStateDir(partition));
+		            var info = partitionState.DeserializeAs<PartitionStateInfo>();
+					// for some misterious reason leader and partition id are grouped this way instead of tuple or strong type
+		            partList.Add(info.Leader + "-" + partition);
+	            }
 
                 partList.Sort();
                 result.Add(topic, partList);

@@ -59,7 +59,7 @@ namespace Kafka.Client.IntegrationTests
                 Assert.That(children, Contains.Item("test"));
                 children = client.GetChildren("/consumers/group1/owners/test", false);
                 Assert.That(children, Is.Not.Null.And.Not.Empty);
-                Assert.That(children.Count, Is.EqualTo(2));
+
                 string partId = children[0];
                 var data = client.ReadData<string>("/consumers/group1/owners/test/" + partId);
                 Assert.That(data, Is.Not.Null.And.Not.Empty);
