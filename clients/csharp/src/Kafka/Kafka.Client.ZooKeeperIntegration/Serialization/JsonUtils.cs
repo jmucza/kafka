@@ -17,13 +17,20 @@
 
 namespace Kafka.Client.ZooKeeperIntegration.Serialization
 {
+	using Newtonsoft.Json;
+
 	public static class JsonUtils
 	{
 		public static T DeserializeAs<T>(this string jsonString)
 		{
 			return string.IsNullOrEmpty(jsonString)
 				? default(T)
-				: Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonString);
+				: JsonConvert.DeserializeObject<T>(jsonString);
 		}
+
+		public static string SerializeAsJson(this object sourceObject)
+		{
+			return sourceObject == null ? null : JsonConvert.SerializeObject(sourceObject);
+		}	
 	}
 }

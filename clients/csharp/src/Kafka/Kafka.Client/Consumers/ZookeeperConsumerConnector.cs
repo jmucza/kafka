@@ -27,6 +27,7 @@ namespace Kafka.Client.Consumers
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
     using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Entities;
     using Kafka.Client.ZooKeeperIntegration.Listeners;
     using Kafka.Client.ZooKeeperIntegration.Serialization;
     using Kafka.Client.ZooKeeperIntegration.Utils;
@@ -328,12 +329,18 @@ namespace Kafka.Client.Consumers
 
         internal void RegisterConsumerInZk(ZKGroupDirs dirs, string consumerIdString, TopicCount topicCount)
         {
-            this.EnsuresNotDisposed();
-            Logger.InfoFormat(CultureInfo.CurrentCulture, "begin registering consumer {0} in ZK", consumerIdString);
-            ZkUtils.CreateEphemeralPathExpectConflict(this.zkClient, dirs.ConsumerRegistryDir + "/" + consumerIdString, topicCount.ToJsonString());
-            Logger.InfoFormat(CultureInfo.CurrentCulture, "end registering consumer {0} in ZK", consumerIdString);
+            this.RegisterConsumerInZk(dirs, consumerIdString, new ConsumerRegistrationInfo(topicCount.TopicCountMap));
         }
 
+        internal void RegisterConsumerInZk(ZKGroupDirs dirs, string consumerIdString, ConsumerRegistrationInfo consumerRegistrationInfo)
+        {
+            this.EnsuresNotDisposed();
+            Logger.InfoFormat(CultureInfo.CurrentCulture, "begin registering consumer {0} in ZK", consumerIdString);
+
+            ZkUtils.CreateEphemeralPathExpectConflict(this.zkClient, dirs.ConsumerRegistryDir + "/" + consumerIdString, consumerRegistrationInfo.SerializeAsJson());
+            Logger.InfoFormat(CultureInfo.CurrentCulture, "end registering consumer {0} in ZK", consumerIdString);
+        }
+        
         /// <summary>
         /// Ensures that object was not disposed
         /// </summary>

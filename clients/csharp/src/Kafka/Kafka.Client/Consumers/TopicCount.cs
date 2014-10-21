@@ -29,12 +29,12 @@ namespace Kafka.Client.Consumers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IDictionary<string, int> topicCountMap;
+		public IDictionary<string, int> TopicCountMap { get; private set; }
         private readonly string consumerIdString;
 
         public TopicCount(string consumerIdString, IDictionary<string, int> topicCountMap)
         {
-            this.topicCountMap = topicCountMap;
+            this.TopicCountMap = topicCountMap;
             this.consumerIdString = consumerIdString;
         }
 
@@ -57,7 +57,7 @@ namespace Kafka.Client.Consumers
         public IDictionary<string, IList<string>> GetConsumerThreadIdsPerTopic()
         {
             var result = new Dictionary<string, IList<string>>();
-            foreach (KeyValuePair<string, int> item in topicCountMap)
+            foreach (KeyValuePair<string, int> item in this.TopicCountMap)
             {
                 var consumerSet = new List<string>();
                 for (int i = 0; i < item.Value; i++)
@@ -76,7 +76,7 @@ namespace Kafka.Client.Consumers
             var o = obj as TopicCount;
             if (o != null)
             {
-                return this.consumerIdString == o.consumerIdString && this.topicCountMap == o.topicCountMap;
+                return this.consumerIdString == o.consumerIdString && this.TopicCountMap == o.TopicCountMap;
             }
 
             return false;
@@ -93,7 +93,7 @@ namespace Kafka.Client.Consumers
             var sb = new StringBuilder();
             sb.Append("{ ");
             int i = 0;
-            foreach (KeyValuePair<string, int> entry in this.topicCountMap)
+            foreach (KeyValuePair<string, int> entry in this.TopicCountMap)
             {
                 if (i > 0)
                 {

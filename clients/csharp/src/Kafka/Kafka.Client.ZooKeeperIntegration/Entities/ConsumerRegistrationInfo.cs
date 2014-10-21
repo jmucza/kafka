@@ -24,6 +24,8 @@ namespace Kafka.Client.ZooKeeperIntegration.Entities
 	/// </summary>
 	public class ConsumerRegistrationInfo
 	{
+		public const int DefaultVersion = 1;
+
 		public int Version { get; set; }
 
 		public string Pattern { get; set; }
@@ -36,5 +38,19 @@ namespace Kafka.Client.ZooKeeperIntegration.Entities
 			this.Pattern = pattern;
 			this.Subscription = subscription;
 		}
+
+		public ConsumerRegistrationInfo(IDictionary<string, int> subscription)
+			: this(DefaultVersion, ConsumerPattern.WhiteList, subscription)
+		{
+		}
+	}
+
+	public static class ConsumerPattern
+	{
+		public const string Static = "static";
+
+		public const string WhiteList = "white_list";
+
+		public const string BlackList = "black_list";
 	}
 }
