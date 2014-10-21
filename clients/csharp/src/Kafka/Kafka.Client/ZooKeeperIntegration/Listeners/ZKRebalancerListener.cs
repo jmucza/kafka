@@ -234,20 +234,21 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             if (ReflectPartitionOwnership(partitionOwnershipDecision))
             {
                 zkClient.SlimLock.EnterWriteLock();
-                try
-                {
-                    this.topicRegistry.Clear();
-                    foreach (var item in currentTopicRegistry)
-                    {
-                        this.topicRegistry.Add(item);
-                    }
-                
-                this.UpdateFetcher(cluster);}
-                finally
-                {
-                    zkClient.SlimLock.ExitWriteLock();
-                }
-                this.oldPartitionsPerTopicMap = partitionsPerTopicMap;
+	            try
+	            {
+		            this.topicRegistry.Clear();
+		            foreach (var item in currentTopicRegistry)
+		            {
+			            this.topicRegistry.Add(item);
+		            }
+
+		            this.UpdateFetcher(cluster);
+	            }
+	            finally
+	            {
+		            zkClient.SlimLock.ExitWriteLock();
+	            }
+	            this.oldPartitionsPerTopicMap = partitionsPerTopicMap;
                 this.oldConsumersPerTopicMap = consumersPerTopicMap;
                 return true;
             }
@@ -375,14 +376,15 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 foreach (KeyValuePair<string, IDictionary<Partition, PartitionTopicInfo>> item in topicRegistry)
                 {
                     var topicDirs = new ZKGroupTopicDirs(this.config.GroupId, item.Key);
-                    foreach (var partition in item.Value.Keys)
+                    foreach (var partitionString in item.Value.Keys)
                     {
-                        string znode = topicDirs.ConsumerOwnerDir + "/" + partition.Name;
+	                    var splitted = partitionString.Name.Split('-');
+	                    var partition = splitted[1];
+	                    var znode = topicDirs.ConsumerOwnerDir + "/" + partition;
                         ZkUtils.DeletePath(zkClient, znode);
                         if (Logger.IsDebugEnabled)
                         {
-                            Logger.DebugFormat(CultureInfo.CurrentCulture, "Consumer {0} releasing {1}",
-                                               this.consumerIdString, znode);
+                            Logger.DebugFormat(CultureInfo.CurrentCulture, "Consumer {0} releasing {1}", this.consumerIdString, znode);
                         }
                     }
                     topicRegistry.Remove(item.Key);

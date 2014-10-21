@@ -178,7 +178,7 @@ namespace Kafka.Client.IntegrationTests
                     Assert.That(ids, Is.Not.Null.And.Not.Empty);
                     Assert.That(ids.Count, Is.EqualTo(2));
                     Assert.That(owners, Is.Not.Null.And.Not.Empty);
-                    Assert.That(owners.Count, Is.EqualTo(2));
+                    Assert.That(owners.Count, Is.EqualTo(3));
 
                     var data1 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[0], false);
                     var data2 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[1], false);
