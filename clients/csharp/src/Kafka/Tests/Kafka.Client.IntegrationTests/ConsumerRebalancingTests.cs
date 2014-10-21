@@ -24,6 +24,7 @@ namespace Kafka.Client.IntegrationTests
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
     using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Entities;
     using Kafka.Client.ZooKeeperIntegration.Serialization;
 
     using NUnit.Framework;
@@ -66,7 +67,8 @@ namespace Kafka.Client.IntegrationTests
                 Assert.That(data, Contains.Substring(consumerId));
                 data = client.ReadData<string>("/consumers/group1/ids/" + consumerId);
                 Assert.That(data, Is.Not.Null.And.Not.Empty);
-                Assert.That(data, Is.EqualTo("{ \"test\": 1 }"));
+	            var consumerRegistrationInfo = data.DeserializeAs<ConsumerRegistrationInfo>();
+	            Assert.That(consumerRegistrationInfo.Subscription["test"], Is.EqualTo(1));
             }
 
             using (var client = new ZooKeeperClient(config.ZooKeeper.ZkConnect, config.ZooKeeper.ZkSessionTimeoutMs, ZooKeeperStringSerializer.Serializer))

@@ -23,6 +23,10 @@ namespace Kafka.Client.Consumers
     using System.Reflection;
     using System.Text;
     using System.Web.Script.Serialization;
+
+    using Kafka.Client.ZooKeeperIntegration.Entities;
+    using Kafka.Client.ZooKeeperIntegration.Serialization;
+
     using log4net;
 
     public class TopicCount
@@ -44,7 +48,10 @@ namespace Kafka.Client.Consumers
             var ser = new JavaScriptSerializer();
             try
             {
-                result = ser.Deserialize<Dictionary<string, int>>(json);
+	            var registrationInfo = json.DeserializeAs<ConsumerRegistrationInfo>();
+
+				return new TopicCount(consumerIdString, registrationInfo.Subscription);
+
             }
             catch (Exception ex)
             {

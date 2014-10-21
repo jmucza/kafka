@@ -19,6 +19,8 @@ using System.Collections.Generic;
 
 namespace Kafka.Client.ZooKeeperIntegration.Entities
 {
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// Consumer registration info (Kafka 0.8.1)
 	/// </summary>
@@ -32,6 +34,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Entities
 
 		public IDictionary<string, int> Subscription { get; set; }
 
+		[JsonConstructor]
 		public ConsumerRegistrationInfo(int version, string pattern, IDictionary<string, int> subscription)
 		{
 			this.Version = version;
