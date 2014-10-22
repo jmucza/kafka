@@ -17,25 +17,48 @@
 
 namespace Kafka.Client.ZooKeeperIntegration.Entities
 {
+	using System;
+	using System.Globalization;
+
+	using Kafka.Client.Utils;
+
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// Broker registration info (Kafka 0.8.1)
 	/// </summary>
 	public class BrokerRegistrationInfo
 	{
+		public const int DefaultVersion = 1;
+		public const int DefaultJmxPort = -1;
+
+		[JsonProperty(PropertyName = "version")]
 		public int Version { get; set; }
 
+		[JsonProperty(PropertyName = "host")]
 		public string Host { get; set; }
 
+		[JsonProperty(PropertyName = "port")]
 		public int Port { get; set; }
 
+		[JsonProperty(PropertyName = "jmx_port")]
 		public int JmxPort { get; set; }
 
-		public BrokerRegistrationInfo(int version, string host, int port, int jmxPort)
+		[JsonProperty(PropertyName = "timestamp")]
+		public string Timestamp { get; set; }
+
+		[JsonConstructor]
+		public BrokerRegistrationInfo(int version, string host, int port, int jmxPort, string timestamp)
 		{
 			this.Version = version;
 			this.Host = host;
 			this.Port = port;
 			this.JmxPort = jmxPort;
+			this.Timestamp = timestamp;
 		}
+
+		public BrokerRegistrationInfo(string host, int port)
+			: this(DefaultVersion, host, port, DefaultJmxPort, DateTimeExtensions.CurrentTimeMillis().ToString(CultureInfo.InvariantCulture))
+		{ }
 	}
 }

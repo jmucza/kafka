@@ -19,6 +19,8 @@ namespace Kafka.Client.ZooKeeperIntegration.Entities
 {
 	using System.Collections.Generic;
 
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// Topic registration info (Kafka 0.8.1)
 	/// </summary>

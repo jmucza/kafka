@@ -17,6 +17,8 @@
 
 namespace Kafka.Client.ZooKeeperIntegration.Utils
 {
+    using System.Globalization;
+
     public class ZKGroupTopicDirs : ZKGroupDirs
     {
         public string ConsumerOffsetDir { get; private set; }
@@ -27,6 +29,16 @@ namespace Kafka.Client.ZooKeeperIntegration.Utils
         {
             this.ConsumerOffsetDir = this.ConsumerGroupDir + "/offsets/" + topic;
             this.ConsumerOwnerDir = this.ConsumerGroupDir + "/owners/" + topic;
+        }
+
+        public string GetConsumerOwnerPartitionDir(int partitionId)
+        {
+	        return this.GetConsumerOwnerPartitionDir(partitionId.ToString(CultureInfo.InvariantCulture));
+        }
+    
+        public string GetConsumerOwnerPartitionDir(string partitionId)
+        {
+            return this.ConsumerOwnerDir + "/" + partitionId;
         }
     }
 }

@@ -18,11 +18,11 @@
 namespace Kafka.Client.ZooKeeperIntegration.Utils
 {
 	using System.Collections.Generic;
-	using System.Collections.Specialized;
 	using System.Globalization;
 	using System.Linq;
 	using System.Reflection;
 
+	using Kafka.Client.ZooKeeperIntegration.Cluster;
 	using Kafka.Client.ZooKeeperIntegration.Entities;
 	using Kafka.Client.ZooKeeperIntegration.Serialization;
 
@@ -110,23 +110,43 @@ namespace Kafka.Client.ZooKeeperIntegration.Utils
 		}
 
 		public static IDictionary<int, string> GetTopicPartitionOwners(
-			ZooKeeperClient client,
+			IZooKeeperClient zkClient,
 			string consumerGroup,
 			string topic)
 		{
 
-			var partitions = GetPartitionsForTopic(client, topic).ToList();
+			var partitions = GetPartitionsForTopic(zkClient, topic).ToList();
 
 			var result = new Dictionary<int, string>(partitions.Count);
 			var dirs = new ZKGroupTopicDirs(consumerGroup, topic);
 			foreach (var partition in partitions)
 			{
-				var partitionOwner = client.ReadData<string>(dirs.ConsumerOwnerDir + "/" + partition);
+				var partitionOwner = zkClient.ReadData<string>(dirs.ConsumerOwnerDir + "/" + partition);
 				result.Add(partition, partitionOwner);
 			}
 
 			return result;
 		}
+
+		public static IDictionary<int, BrokerRegistrationInfo> GetBrokerRegistrationInfos(IZooKeeperClient zkClient)
+		{
+			var result = new Dictionary<int, BrokerRegistrationInfo>();
+			var brokerIds = zkClient.GetChildrenParentMayNotExist(ZooKeeperClient.DefaultBrokerIdsPath).Select(int.Parse);
+			
+			foreach (var brokerId in brokerIds)
+			{
+				var brokerPath = ZooKeeperClient.DefaultBrokerIdsPath + "/" + brokerId;
+				var infoString = zkClient.ReadData<string>(brokerPath, true);
+
+				if (!string.IsNullOrEmpty(infoString))
+				{
+					result.Add(brokerId, infoString.DeserializeAs<BrokerRegistrationInfo>());
+				}
+			}
+
+			return result;
+		}
+
 		public static void CreateEphemeralPathExpectConflict(IZooKeeperClient zkClient, string path, string data)
         {
             try
