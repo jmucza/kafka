@@ -83,7 +83,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Utils
             {
 	            var topicDirs = new ZkTopicDirs(topic);
 
-	            var partitions = zkClient.GetChildrenParentMayNotExist(topicDirs.TopicPartitionsDir);
+				var partitions = GetPartitionsForTopic(zkClient, topic);
 
 				var partList = new List<string>();
 				foreach (var partition in partitions)
@@ -102,6 +102,31 @@ namespace Kafka.Client.ZooKeeperIntegration.Utils
             return result;
         }
 
+		public static IEnumerable<int> GetPartitionsForTopic(IZooKeeperClient zkClient, string topic)
+		{
+			var dirs = new ZkTopicDirs(topic);
+
+			return zkClient.GetChildrenParentMayNotExist(dirs.TopicPartitionsDir).Select(int.Parse);
+		}
+
+		public static IDictionary<int, string> GetTopicPartitionOwners(
+			ZooKeeperClient client,
+			string consumerGroup,
+			string topic)
+		{
+
+			var partitions = GetPartitionsForTopic(client, topic).ToList();
+
+			var result = new Dictionary<int, string>(partitions.Count);
+			var dirs = new ZKGroupTopicDirs(consumerGroup, topic);
+			foreach (var partition in partitions)
+			{
+				var partitionOwner = client.ReadData<string>(dirs.ConsumerOwnerDir + "/" + partition);
+				result.Add(partition, partitionOwner);
+			}
+
+			return result;
+		}
 		public static void CreateEphemeralPathExpectConflict(IZooKeeperClient zkClient, string path, string data)
         {
             try

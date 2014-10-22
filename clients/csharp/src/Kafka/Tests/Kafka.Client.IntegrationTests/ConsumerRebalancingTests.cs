@@ -26,6 +26,7 @@ namespace Kafka.Client.IntegrationTests
     using Kafka.Client.ZooKeeperIntegration.Cluster;
     using Kafka.Client.ZooKeeperIntegration.Entities;
     using Kafka.Client.ZooKeeperIntegration.Serialization;
+    using Kafka.Client.ZooKeeperIntegration.Utils;
 
     using NUnit.Framework;
 
@@ -157,9 +158,7 @@ namespace Kafka.Client.IntegrationTests
         public void ConsumerPerformsRebalancingWhenNewConsumerIsAddedAndTheyDividePartitions()
         {
             var config = this.ZooKeeperBasedConsumerConfig;
-            IList<string> ids;
-            IList<string> owners;
-            using (var consumerConnector = new ZookeeperConsumerConnector(config, true))
+	        using (var consumerConnector = new ZookeeperConsumerConnector(config, true))
             {
                 var client = ReflectionHelper.GetInstanceField<ZooKeeperClient>(
                     "zkClient", consumerConnector);
@@ -172,22 +171,20 @@ namespace Kafka.Client.IntegrationTests
                 {
                     consumerConnector2.CreateMessageStreams(topicCount);
                     WaitUntillIdle(client, 1000);
-                    ids = client.GetChildren("/consumers/group1/ids", false).ToList();
-                    owners = client.GetChildren("/consumers/group1/owners/test", false).ToList();
+                    var ids = client.GetChildren("/consumers/group1/ids", false).ToList();
 
                     Assert.That(ids, Is.Not.Null.And.Not.Empty);
                     Assert.That(ids.Count, Is.EqualTo(2));
-                    Assert.That(owners, Is.Not.Null.And.Not.Empty);
-                    Assert.That(owners.Count, Is.EqualTo(3));
 
-                    var data1 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[0], false);
-                    var data2 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[1], false);
+	                var owners = ZkUtils.GetTopicPartitionOwners(client, "group1", "test");
+					Assert.That(owners, Is.Not.Null.And.Not.Empty);
 
-                    Assert.That(data1, Is.Not.Null.And.Not.Empty);
-                    Assert.That(data2, Is.Not.Null.And.Not.Empty);
-                    Assert.That(data1, Is.Not.EqualTo(data2));
-                    Assert.That(data1, Is.StringStarting(ids[0]).Or.StringStarting(ids[1]));
-                    Assert.That(data2, Is.StringStarting(ids[0]).Or.StringStarting(ids[1]));
+					var consumers = owners.Values.Distinct().ToList();
+					Assert.That(consumers.Count(), Is.EqualTo(ids.Count));
+					foreach (var id in ids)
+					{
+						Assert.IsTrue(consumers.Exists(consumer => consumer.StartsWith(id)));
+					}
                 }
             }
         }
@@ -198,7 +195,8 @@ namespace Kafka.Client.IntegrationTests
             var config = this.ZooKeeperBasedConsumerConfig;
             string basePath = "/consumers/" + config.GroupId;
             IList<string> ids;
-            IList<string> owners;
+            IDictionary<int, string> owners;
+	        List<string> consumers;
             using (var consumerConnector = new ZookeeperConsumerConnector(config, true))
             {
                 var client = ReflectionHelper.GetInstanceField<ZooKeeperClient>("zkClient", consumerConnector);
@@ -212,29 +210,38 @@ namespace Kafka.Client.IntegrationTests
                     consumerConnector2.CreateMessageStreams(topicCount);
                     WaitUntillIdle(client, 1000);
                     ids = client.GetChildren("/consumers/group1/ids", false).ToList();
-                    owners = client.GetChildren("/consumers/group1/owners/test", false).ToList();
                     Assert.That(ids, Is.Not.Null.And.Not.Empty);
                     Assert.That(ids.Count, Is.EqualTo(2));
-                    Assert.That(owners, Is.Not.Null.And.Not.Empty);
-                    Assert.That(owners.Count, Is.EqualTo(2));
-                }
+
+					owners = ZkUtils.GetTopicPartitionOwners(client, "group1", "test");
+					consumers = owners.Values.Distinct().ToList();
+					Assert.That(owners, Is.Not.Null.And.Not.Empty);
+					Assert.That(consumers.Count(), Is.EqualTo(ids.Count));
+				}
 
                 WaitUntillIdle(client, 1000);
                 ids = client.GetChildren("/consumers/group1/ids", false).ToList();
-                owners = client.GetChildren("/consumers/group1/owners/test", false).ToList();
 
                 Assert.That(ids, Is.Not.Null.And.Not.Empty);
                 Assert.That(ids.Count, Is.EqualTo(1));
-                Assert.That(owners, Is.Not.Null.And.Not.Empty);
-                Assert.That(owners.Count, Is.EqualTo(2));
 
-                var data1 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[0], false);
-                var data2 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[1], false);
+				owners = ZkUtils.GetTopicPartitionOwners(client, "group1", "test");
+				consumers = owners.Values.Distinct().ToList();
 
-                Assert.That(data1, Is.Not.Null.And.Not.Empty);
-                Assert.That(data2, Is.Not.Null.And.Not.Empty);
-                Assert.That(data1, Is.EqualTo(data2));
-                Assert.That(data1, Is.StringStarting(ids[0]));
+				Assert.That(owners, Is.Not.Null.And.Not.Empty);
+				Assert.That(consumers.Count(), Is.EqualTo(ids.Count));
+
+				foreach (var id in ids)
+				{
+					Assert.IsTrue(consumers.Exists(consumer => consumer.StartsWith(id)));
+				}
+				//var data1 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[0], false);
+				//var data2 = client.ReadData<string>("/consumers/group1/owners/test/" + owners[1], false);
+
+				//Assert.That(data1, Is.Not.Null.And.Not.Empty);
+				//Assert.That(data2, Is.Not.Null.And.Not.Empty);
+				//Assert.That(data1, Is.EqualTo(data2));
+				//Assert.That(data1, Is.StringStarting(ids[0]));
             }
         }
     }
