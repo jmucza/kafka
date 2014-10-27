@@ -29,6 +29,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
     using Kafka.Client.Exceptions;
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Consumers;
     using Kafka.Client.ZooKeeperIntegration.Events;
     using Kafka.Client.ZooKeeperIntegration.Utils;
 

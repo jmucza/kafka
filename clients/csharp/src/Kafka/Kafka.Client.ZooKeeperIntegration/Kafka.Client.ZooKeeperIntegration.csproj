@@ -61,6 +61,7 @@
     <Compile Include="Configuration\ZooKeeperConfigurationElement.cs" />
     <Compile Include="Configuration\ZooKeeperServerConfigurationElement.cs" />
     <Compile Include="Configuration\ZooKeeperServerConfigurationElementCollection.cs" />
+    <Compile Include="Consumers\TopicCount.cs" />
     <Compile Include="Entities\BrokerRegistrationInfo.cs" />
     <Compile Include="Entities\ConsumerRegistrationInfo.cs" />
     <Compile Include="Entities\PartitionStateInfo.cs" />

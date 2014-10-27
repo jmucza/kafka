@@ -109,7 +109,6 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
@@ -138,7 +137,6 @@
     <Compile Include="Consumers\IConsumerConnector.cs" />
     <Compile Include="Consumers\KafkaMessageStream.cs" />
     <Compile Include="Consumers\PartitionTopicInfo.cs" />
-    <Compile Include="Consumers\TopicCount.cs" />
     <Compile Include="Consumers\ZookeeperConsumerConnector.cs" />
     <Compile Include="Exceptions\ConsumerTimeoutException.cs" />
     <Compile Include="Exceptions\IllegalStateException.cs" />

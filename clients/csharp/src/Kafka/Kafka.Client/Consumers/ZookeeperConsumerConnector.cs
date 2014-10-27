@@ -27,6 +27,7 @@ namespace Kafka.Client.Consumers
     using Kafka.Client.Utils;
     using Kafka.Client.ZooKeeperIntegration;
     using Kafka.Client.ZooKeeperIntegration.Cluster;
+    using Kafka.Client.ZooKeeperIntegration.Consumers;
     using Kafka.Client.ZooKeeperIntegration.Entities;
     using Kafka.Client.ZooKeeperIntegration.Listeners;
     using Kafka.Client.ZooKeeperIntegration.Serialization;
