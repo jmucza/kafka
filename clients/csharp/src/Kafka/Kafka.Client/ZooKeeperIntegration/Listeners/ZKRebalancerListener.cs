@@ -444,17 +444,31 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             var relevantTopicThreadIdsMap = new Dictionary<string, IList<string>>();
             foreach (var myMap in myTopicThreadIdsMap)
             {
-                var oldPartValue = oldPartMap.ContainsKey(myMap.Key) ? oldPartMap[myMap.Key] : null;
-                var newPartValue = newPartMap.ContainsKey(myMap.Key) ? newPartMap[myMap.Key] : null;
-                var oldConsumerValue = oldConsumerMap.ContainsKey(myMap.Key) ? oldConsumerMap[myMap.Key] : null;
-                var newConsumerValue = newConsumerMap.ContainsKey(myMap.Key) ? newConsumerMap[myMap.Key] : null;
-                if (oldPartValue != newPartValue || oldConsumerValue != newConsumerValue)
-                {
-                    relevantTopicThreadIdsMap.Add(myMap.Key, myMap.Value);
-                }
+	            if ((!HaveSameValue(oldPartMap, newPartMap, myMap.Key)) || 
+					(!HaveSameValue(oldConsumerMap, newConsumerMap, myMap.Key)))
+	            {
+					relevantTopicThreadIdsMap.Add(myMap.Key, myMap.Value);
+	            }
             }
 
             return relevantTopicThreadIdsMap;
         }
+
+	    private static bool HaveSameValue<TKey, TValue>(IDictionary<TKey, IList<TValue>> left, IDictionary<TKey, IList<TValue>> right, TKey key)
+	    {
+		    var l = left.ContainsKey(key) ? left[key] : default(IList<TValue>);
+			var r = right.ContainsKey(key) ? right[key] : default(IList<TValue>);
+
+		    return HaveSameItems(l, r);
+	    }
+
+	    private static bool HaveSameItems<T>(IList<T> left, IList<T> right)
+	    {
+		    if ((left == null) && (right == null)) return true;
+
+			if ((left == null) ^ (right == null)) return false;
+
+		    return left.Intersect(right).Count() == left.Count;
+	    }
     }
 }
