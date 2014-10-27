@@ -19,14 +19,14 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
 {
 	using System.Linq;
 
-	using log4net;
+	using Kafka.Client.Log;
 
 	/// <summary>
     /// Represents methods that will handle a ZooKeeper child events  
     /// </summary>
     public class ChildChangedEventItem
     {
-        private readonly ILog logger;
+        private readonly ILogger logger;
         private ZooKeeperEventHandler<ZooKeeperChildChangedEventArgs> childChanged;
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
         /// <remarks>
         /// Should use external logger to keep same format of all event logs
         /// </remarks>
-        public ChildChangedEventItem(ILog logger)
+        public ChildChangedEventItem(ILogger logger)
         {
             this.logger = logger;
         }
@@ -72,7 +72,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
         /// <remarks>
         /// Should use external logger to keep same format of all event logs
         /// </remarks>
-        public ChildChangedEventItem(ILog logger, ZooKeeperEventHandler<ZooKeeperChildChangedEventArgs> handler)
+        public ChildChangedEventItem(ILogger logger, ZooKeeperEventHandler<ZooKeeperChildChangedEventArgs> handler)
         {
             this.logger = logger;
             this.ChildChanged += handler;

@@ -24,13 +24,12 @@ namespace Kafka.Client.ZooKeeperIntegration
 	using System.Reflection;
 	using System.Threading;
 
+	using Kafka.Client.Log;
 	using Kafka.Client.Utils;
 	using Kafka.Client.ZooKeeperIntegration.Entities;
 	using Kafka.Client.ZooKeeperIntegration.Excepttions;
 	using Kafka.Client.ZooKeeperIntegration.Serialization;
 	using Kafka.Client.ZooKeeperIntegration.Utils;
-
-	using log4net;
 
 	using Org.Apache.Zookeeper.Data;
 
@@ -45,7 +44,7 @@ namespace Kafka.Client.ZooKeeperIntegration
         public const string DefaultConsumersPath = "/consumers";
         public const string DefaultBrokerIdsPath = "/brokers/ids";
         public const string DefaultBrokerTopicsPath = "/brokers/topics";
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private IZooKeeperConnection connection;
         private bool shutdownTriggered;
         private KeeperState currentState;

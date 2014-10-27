@@ -25,6 +25,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Partitioning
 	using System.Reflection;
 	using System.Threading;
 
+	using Kafka.Client.Log;
 	using Kafka.Client.Utils;
 	using Kafka.Client.ZooKeeperIntegration.Cluster;
 	using Kafka.Client.ZooKeeperIntegration.Configuration;
@@ -32,8 +33,6 @@ namespace Kafka.Client.ZooKeeperIntegration.Partitioning
 	using Kafka.Client.ZooKeeperIntegration.Events;
 	using Kafka.Client.ZooKeeperIntegration.Listeners;
 	using Kafka.Client.ZooKeeperIntegration.Serialization;
-
-	using log4net;
 
 	using ZooKeeperNet;
 
@@ -45,7 +44,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Partitioning
     /// </remarks>
     public class ZKBrokerPartitionInfo : IBrokerPartitionInfo, IZooKeeperStateListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly Action<int, string, int> callback;
         private IDictionary<int, Broker> brokers;
         private IDictionary<string, SortedSet<Partition>> topicBrokerPartitions;

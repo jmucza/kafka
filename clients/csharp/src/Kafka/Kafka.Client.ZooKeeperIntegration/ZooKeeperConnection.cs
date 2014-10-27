@@ -22,10 +22,9 @@ namespace Kafka.Client.ZooKeeperIntegration
 	using System.IO;
 	using System.Reflection;
 
+	using Kafka.Client.Log;
 	using Kafka.Client.Utils;
 	using Kafka.Client.ZooKeeperIntegration.Excepttions;
-
-	using log4net;
 
 	using Org.Apache.Zookeeper.Data;
 
@@ -36,7 +35,7 @@ namespace Kafka.Client.ZooKeeperIntegration
     /// </summary>
     public class ZooKeeperConnection : IZooKeeperConnection
     {
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public const int DefaultSessionTimeout = 30000;
 

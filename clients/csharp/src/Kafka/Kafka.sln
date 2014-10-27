@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{434C98
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.Client.ZooKeeperIntegration.Tests", "Kafka.Client.ZooKeeperIntegration.Tests\Kafka.Client.ZooKeeperIntegration.Tests.csproj", "{01177E3F-FFA1-476B-A9FE-E7A4878ED7AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.Client.Log", "Kafka.Client.Log\Kafka.Client.Log.csproj", "{175F57B6-00CB-4984-B165-992A3C25301E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,12 @@ Global
 		{01177E3F-FFA1-476B-A9FE-E7A4878ED7AC}.Integration|Any CPU.Build.0 = Release|Any CPU
 		{01177E3F-FFA1-476B-A9FE-E7A4878ED7AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01177E3F-FFA1-476B-A9FE-E7A4878ED7AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{175F57B6-00CB-4984-B165-992A3C25301E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{175F57B6-00CB-4984-B165-992A3C25301E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{175F57B6-00CB-4984-B165-992A3C25301E}.Integration|Any CPU.ActiveCfg = Release|Any CPU
+		{175F57B6-00CB-4984-B165-992A3C25301E}.Integration|Any CPU.Build.0 = Release|Any CPU
+		{175F57B6-00CB-4984-B165-992A3C25301E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{175F57B6-00CB-4984-B165-992A3C25301E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

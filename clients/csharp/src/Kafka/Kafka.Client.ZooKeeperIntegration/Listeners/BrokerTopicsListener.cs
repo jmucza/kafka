@@ -23,11 +23,11 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
 	using System.Linq;
 	using System.Reflection;
 
+	using Kafka.Client.Log;
 	using Kafka.Client.Utils;
 	using Kafka.Client.ZooKeeperIntegration.Cluster;
 	using Kafka.Client.ZooKeeperIntegration.Events;
 
-	using log4net;
 
 	/// <summary>
     /// Listens to new broker registrations under a particular topic, in zookeeper and
@@ -35,7 +35,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
     /// </summary>
     public class BrokerTopicsListener : IZooKeeperChildListener
     {
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILogger Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IDictionary<int, Broker> actualBrokerIdMap;
         private readonly Action<int, string, int> callback;

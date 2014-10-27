@@ -19,14 +19,14 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
 {
 	using System.Linq;
 
-	using log4net;
+	using Kafka.Client.Log;
 
 	/// <summary>
     /// Represents methods that will handle a ZooKeeper data events  
     /// </summary>
     public class DataChangedEventItem
     {
-        private readonly ILog logger;
+        private readonly ILogger logger;
         private ZooKeeperEventHandler<ZooKeeperDataChangedEventArgs> dataChanged;
         private ZooKeeperEventHandler<ZooKeeperDataChangedEventArgs> dataDeleted;
 
@@ -73,7 +73,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
         /// <remarks>
         /// Should use external logger to keep same format of all event logs
         /// </remarks>
-        public DataChangedEventItem(ILog logger)
+        public DataChangedEventItem(ILogger logger)
         {
             this.logger = logger;
         }
@@ -94,7 +94,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Events
         /// Should use external logger to keep same format of all event logs
         /// </remarks>
         public DataChangedEventItem(
-            ILog logger,
+            ILogger logger,
             ZooKeeperEventHandler<ZooKeeperDataChangedEventArgs> changedHandler,
             ZooKeeperEventHandler<ZooKeeperDataChangedEventArgs> deletedHandler)
         {

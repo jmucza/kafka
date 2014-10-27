@@ -49,9 +49,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="log4net">
-      <HintPath>..\..\..\lib\log4Net\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="ZooKeeperNet">
       <HintPath>..\..\..\lib\zookeeper\ZooKeeperNet.dll</HintPath>
     </Reference>
@@ -105,6 +102,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kafka.Client.Log\Kafka.Client.Log.csproj">
+      <Project>{175f57b6-00cb-4984-b165-992a3c25301e}</Project>
+      <Name>Kafka.Client.Log</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kafka.Client.Utils\Kafka.Client.Utils.csproj">
       <Project>{1302eec4-1826-4a4c-be9a-8c43a2956396}</Project>
       <Name>Kafka.Client.Utils</Name>
