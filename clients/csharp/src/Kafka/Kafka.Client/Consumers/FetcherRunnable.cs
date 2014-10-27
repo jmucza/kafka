@@ -185,7 +185,7 @@ namespace Kafka.Client.Consumers
             var offsets = this.simpleConsumer.GetOffsetsBefore(request);
             var topicDirs = new ZKGroupTopicDirs(this.config.GroupId, topic);
             Logger.InfoFormat(CultureInfo.CurrentCulture, "updating partition {0} with {1} offset {2}", partition.Name, offset == OffsetRequest.EarliestTime ? "earliest" : "latest", offsets[0]);
-            ZkUtils.UpdatePersistentPath(this.zkClient, topicDirs.ConsumerOffsetDir + "/" + partition.Name, offsets[0].ToString());
+			this.zkClient.UpdatePersistentPath(topicDirs.ConsumerOffsetDir + "/" + partition.Name, offsets[0].ToString());
 
             return offsets[0];
         }

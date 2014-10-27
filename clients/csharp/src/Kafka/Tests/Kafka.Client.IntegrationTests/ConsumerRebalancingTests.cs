@@ -200,7 +200,7 @@ namespace Kafka.Client.IntegrationTests
                     Assert.That(ids, Is.Not.Null.And.Not.Empty);
                     Assert.That(ids.Count, Is.EqualTo(2));
 
-                    var owners = ZkUtils.GetTopicPartitionOwners(client, "group1", "test");
+					var owners = client.GetTopicPartitionOwners("group1", "test");
                     Assert.That(owners, Is.Not.Null.And.Not.Empty);
 
                     var consumers = owners.Values.Distinct().ToList();
@@ -237,7 +237,7 @@ namespace Kafka.Client.IntegrationTests
                     Assert.That(ids, Is.Not.Null.And.Not.Empty);
                     Assert.That(ids.Count, Is.EqualTo(2));
 
-                    owners = ZkUtils.GetTopicPartitionOwners(client, "group1", "test");
+					owners = client.GetTopicPartitionOwners("group1", "test");
                     consumers = owners.Values.Distinct().ToList();
                     Assert.That(owners, Is.Not.Null.And.Not.Empty);
                     Assert.That(consumers.Count(), Is.EqualTo(ids.Count));
@@ -249,7 +249,7 @@ namespace Kafka.Client.IntegrationTests
                 Assert.That(ids, Is.Not.Null.And.Not.Empty);
                 Assert.That(ids.Count, Is.EqualTo(1));
 
-                owners = ZkUtils.GetTopicPartitionOwners(client, "group1", "test");
+				owners = client.GetTopicPartitionOwners("group1", "test");
                 consumers = owners.Values.Distinct().ToList();
 
                 Assert.That(owners, Is.Not.Null.And.Not.Empty);

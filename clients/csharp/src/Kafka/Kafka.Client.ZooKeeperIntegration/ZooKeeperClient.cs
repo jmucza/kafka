@@ -19,12 +19,16 @@ namespace Kafka.Client.ZooKeeperIntegration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
+	using System.Linq;
 	using System.Reflection;
 	using System.Threading;
 
 	using Kafka.Client.Utils;
+	using Kafka.Client.ZooKeeperIntegration.Entities;
 	using Kafka.Client.ZooKeeperIntegration.Excepttions;
 	using Kafka.Client.ZooKeeperIntegration.Serialization;
+	using Kafka.Client.ZooKeeperIntegration.Utils;
 
 	using log4net;
 
@@ -897,6 +901,207 @@ namespace Kafka.Client.ZooKeeperIntegration
                 return null;
             }
         }
+
+		/// <summary>
+		/// Stores data at given persistent path
+		/// </summary>
+		/// <param name="path">The persistent path.</param>
+		/// <param name="data">The data.</param>
+		public void UpdatePersistentPath(string path, string data)
+		{
+			try
+			{
+				this.WriteData(path, data);
+			}
+			catch (KeeperException.NoNodeException)
+			{
+				CreateParentPath(path);
+
+				try
+				{
+					this.CreatePersistent(path, data);
+				}
+				catch (KeeperException.NodeExistsException)
+				{
+					this.WriteData(path, data);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Creates the parent path of given path.
+		/// </summary>
+		/// <param name="path">The path whose parent needs to be created.</param>
+		public void CreateParentPath(string path)
+		{
+			string parentDir = path.Substring(0, path.LastIndexOf('/'));
+			if (parentDir.Length != 0)
+			{
+				this.CreatePersistent(parentDir, true);
+			}
+		}
+
+		/// <summary>
+		/// Deletes a path and logs exceptions, if any
+		/// </summary>
+		/// <param name="path">The path to be deleted.</param>
+		public void DeletePath(string path)
+		{
+			try
+			{
+				this.Delete(path);
+			}
+			catch (KeeperException.NoNodeException)
+			{
+				Logger.InfoFormat(CultureInfo.CurrentCulture, "{0} deleted during connection loss; this is ok", path);
+			}
+		}
+
+		/// <summary>
+		/// Stores data at ephemeral path and handles conflicts
+		/// </summary>
+		/// <param name="path">The ephemeral path</param>
+		/// <param name="data">The data</param>
+		public void CreateEphemeralPathExpectConflict(string path, string data)
+		{
+			try
+			{
+				this.CreateEphemeralPath(path, data);
+			}
+			catch (KeeperException.NodeExistsException)
+			{
+				string storedData;
+				try
+				{
+					storedData = this.ReadData<string>(path);
+				}
+				catch (KeeperException.NoNodeException)
+				{
+					// the node disappeared; treat as if node existed and let caller handles this
+					throw;
+				}
+
+				if (storedData == null || storedData != data)
+				{
+					Logger.InfoFormat(CultureInfo.CurrentCulture, "conflict in {0} data: {1} stored data: {2}", path, data, storedData);
+					throw;
+				}
+				else
+				{
+					// otherwise, the creation succeeded, return normally
+					Logger.InfoFormat(CultureInfo.CurrentCulture, "{0} exits with value {1} during connection loss; this is ok", path, data);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Stores data at ephemeral path
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="data">The data.</param>
+		public void CreateEphemeralPath(string path, string data)
+		{
+			try
+			{
+				this.CreateEphemeral(path, data);
+			}
+			catch (KeeperException.NoNodeException)
+			{
+				this.CreateParentPath(path);
+				this.CreateEphemeral(path, data);
+			}
+		}
+
+		/// <summary>
+		/// Get the partitions of a set of topics
+		/// </summary>
+		/// <param name="topics"></param>
+		/// <returns></returns>
+		public IDictionary<string, IList<string>> GetPartitionsForTopics(IEnumerable<string> topics)
+		{
+			var result = new Dictionary<string, IList<string>>();
+			foreach (string topic in topics)
+			{
+				var topicDirs = new ZkTopicDirs(topic);
+
+				var partitions = GetPartitionsForTopic(topic);
+
+				var partList = new List<string>();
+				foreach (var partition in partitions)
+				{
+					var partitionState = this.ReadData<string>(topicDirs.GetPartitionStateDir(partition));
+					var info = partitionState.DeserializeAs<PartitionStateInfo>();
+					// for some misterious reason leader and partition id are grouped this way instead of tuple or strong type
+					partList.Add(info.Leader + "-" + partition);
+					//partList.Add(partition);
+				}
+
+				partList.Sort();
+				result.Add(topic, partList);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the partitions of a topic
+		/// </summary>
+		/// <param name="topic"></param>
+		/// <returns></returns>
+		public IEnumerable<int> GetPartitionsForTopic(string topic)
+		{
+			var dirs = new ZkTopicDirs(topic);
+
+			return this.GetChildrenParentMayNotExist(dirs.TopicPartitionsDir).Select(int.Parse);
+		}
+
+
+		/// <summary>
+		/// Get the topic partition owners
+		/// </summary>
+		/// <param name="consumerGroup"></param>
+		/// <param name="topic"></param>
+		/// <returns></returns>
+		public IDictionary<int, string> GetTopicPartitionOwners(
+			string consumerGroup,
+			string topic)
+		{
+
+			var partitions = GetPartitionsForTopic(topic).ToList();
+
+			var result = new Dictionary<int, string>(partitions.Count);
+			var dirs = new ZKGroupTopicDirs(consumerGroup, topic);
+			foreach (var partition in partitions)
+			{
+				var partitionOwner = this.ReadData<string>(dirs.ConsumerOwnerDir + "/" + partition);
+				result.Add(partition, partitionOwner);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get registration information
+		/// </summary>
+		/// <returns></returns>
+		public IDictionary<int, BrokerRegistrationInfo> GetBrokerRegistrationInfos()
+		{
+			var result = new Dictionary<int, BrokerRegistrationInfo>();
+			var brokerIds = this.GetChildrenParentMayNotExist(DefaultBrokerIdsPath).Select(int.Parse);
+
+			foreach (var brokerId in brokerIds)
+			{
+				var brokerPath = DefaultBrokerIdsPath + "/" + brokerId;
+				var infoString = this.ReadData<string>(brokerPath, true);
+
+				if (!string.IsNullOrEmpty(infoString))
+				{
+					result.Add(brokerId, infoString.DeserializeAs<BrokerRegistrationInfo>());
+				}
+			}
+
+			return result;
+		}
 
         /// <summary>
         /// Ensures that object wasn't disposed

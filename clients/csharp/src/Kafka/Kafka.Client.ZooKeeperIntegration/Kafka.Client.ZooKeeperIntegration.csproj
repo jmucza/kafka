@@ -94,7 +94,6 @@
     <Compile Include="Utils\ZKGroupDirs.cs" />
     <Compile Include="Utils\ZKGroupTopicDirs.cs" />
     <Compile Include="Utils\ZkTopicDirs.cs" />
-    <Compile Include="Utils\ZkUtils.cs" />
     <Compile Include="ZooKeeperClient.cs" />
     <Compile Include="ZooKeeperClient.Watcher.cs">
       <DependentUpon>ZooKeeperClient.cs</DependentUpon>

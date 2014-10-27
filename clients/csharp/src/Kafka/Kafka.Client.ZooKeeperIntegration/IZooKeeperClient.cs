@@ -21,6 +21,7 @@ namespace Kafka.Client.ZooKeeperIntegration
 	using System.Collections.Generic;
 	using System.Threading;
 
+	using Kafka.Client.ZooKeeperIntegration.Entities;
 	using Kafka.Client.ZooKeeperIntegration.Listeners;
 
 	using Org.Apache.Zookeeper.Data;
@@ -471,5 +472,68 @@ namespace Kafka.Client.ZooKeeperIntegration
         /// Created znode's path
         /// </returns>
         string CreateEphemeralSequential(string path, object data);
+
+		/// <summary>
+		/// Get the partitions of a set of topics
+		/// </summary>
+		/// <param name="topics"></param>
+		/// <returns></returns>
+		IDictionary<string, IList<string>> GetPartitionsForTopics(IEnumerable<string> topics);
+
+		/// <summary>
+		/// Get the partitions of a topic
+		/// </summary>
+		/// <param name="topic"></param>
+		/// <returns></returns>
+		IEnumerable<int> GetPartitionsForTopic(string topic);
+
+		/// <summary>
+		/// Get the topic partition owners
+		/// </summary>
+		/// <param name="consumerGroup"></param>
+		/// <param name="topic"></param>
+		/// <returns></returns>
+		IDictionary<int, string> GetTopicPartitionOwners(
+			string consumerGroup,
+			string topic);
+
+		/// <summary>
+		/// Get registration information
+		/// </summary>
+		/// <returns></returns>
+		IDictionary<int, BrokerRegistrationInfo> GetBrokerRegistrationInfos();
+
+		/// <summary>
+		/// Stores data at given persistent path
+		/// </summary>
+		/// <param name="path">The persistent path.</param>
+		/// <param name="data">The data.</param>
+		void UpdatePersistentPath(string path, string data);
+
+		/// <summary>
+		/// Creates the parent path of given path.
+		/// </summary>
+		/// <param name="path">The path whose parent needs to be created.</param>
+		void CreateParentPath(string path);
+
+		/// <summary>
+		/// Deletes a path and logs exceptions, if any
+		/// </summary>
+		/// <param name="path">The path to be deleted.</param>
+		void DeletePath(string path);
+
+		/// <summary>
+		/// Stores data at ephemeral path and handles conflicts
+		/// </summary>
+		/// <param name="path">The ephemeral path</param>
+		/// <param name="data">The data</param>
+		void CreateEphemeralPathExpectConflict(string path, string data);
+
+		/// <summary>
+		/// Stores data at ephemeral path
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="data">The data.</param>
+		void CreateEphemeralPath(string path, string data);
     }
 }

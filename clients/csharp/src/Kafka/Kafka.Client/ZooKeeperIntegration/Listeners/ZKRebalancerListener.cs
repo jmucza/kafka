@@ -162,7 +162,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
             var myTopicThresdIdsMap = this.GetTopicCount(this.consumerIdString).GetConsumerThreadIdsPerTopic();
             var cluster = new Cluster(zkClient);
             var consumersPerTopicMap = this.GetConsumersPerTopic(this.config.GroupId);
-            var partitionsPerTopicMap = ZkUtils.GetPartitionsForTopics(this.zkClient, myTopicThresdIdsMap.Keys);
+			var partitionsPerTopicMap = this.zkClient.GetPartitionsForTopics(myTopicThresdIdsMap.Keys);
             var relevantTopicThreadIdsMap = GetRelevantTopicMap(
                 myTopicThresdIdsMap,
                 partitionsPerTopicMap,
@@ -272,7 +272,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 var partitionOwnerPath = topicDirs.ConsumerOwnerDir + "/" + partition;
                 try
                 {
-                    ZkUtils.CreateEphemeralPathExpectConflict(zkClient, partitionOwnerPath, consumerThreadId);
+					zkClient.CreateEphemeralPathExpectConflict(partitionOwnerPath, consumerThreadId);
                     Logger.InfoFormat("{0} successfully owned partition {1} for topic {2}", consumerThreadId, partition, topic);
                     successfullyOwnedPartitions.Add(new Tuple<string, string>(topic, partition));
                     partitionOwnershipSuccessful.Add(true);
@@ -290,7 +290,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
                 {
                     var topicDirs = new ZKGroupTopicDirs(config.GroupId, topicAndPartition.Item1);
                     var znode = topicDirs.ConsumerOwnerDir + "/" + topicAndPartition.Item2;
-                    ZkUtils.DeletePath(zkClient, znode);
+					zkClient.DeletePath(znode);
                     Logger.DebugFormat("Consumer {0} releasing {1}", consumerIdString, znode);
                 }
                 return false;
@@ -381,7 +381,7 @@ namespace Kafka.Client.ZooKeeperIntegration.Listeners
 	                    var splitted = partitionString.Name.Split('-');
 	                    var partition = splitted[1];
 	                    var znode = topicDirs.ConsumerOwnerDir + "/" + partition;
-                        ZkUtils.DeletePath(zkClient, znode);
+                        zkClient.DeletePath(znode);
                         if (Logger.IsDebugEnabled)
                         {
                             Logger.DebugFormat(CultureInfo.CurrentCulture, "Consumer {0} releasing {1}", this.consumerIdString, znode);

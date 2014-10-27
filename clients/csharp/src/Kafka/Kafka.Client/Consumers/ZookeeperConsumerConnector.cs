@@ -119,9 +119,7 @@ namespace Kafka.Client.Consumers
                         var newOffset = partition.Value.GetConsumeOffset();
                         try
                         {
-                            ZkUtils.UpdatePersistentPath(zkClient,
-                                                         topicDirs.ConsumerOffsetDir + "/" +
-                                                         partition.Value.Partition.Name, newOffset.ToString());
+                            zkClient.UpdatePersistentPath(topicDirs.ConsumerOffsetDir + "/" + partition.Value.Partition.Name, newOffset.ToString());
                         }
                         catch (Exception ex)
                         {
@@ -337,7 +335,7 @@ namespace Kafka.Client.Consumers
             this.EnsuresNotDisposed();
             Logger.InfoFormat(CultureInfo.CurrentCulture, "begin registering consumer {0} in ZK", consumerIdString);
 
-            ZkUtils.CreateEphemeralPathExpectConflict(this.zkClient, dirs.ConsumerRegistryDir + "/" + consumerIdString, consumerRegistrationInfo.SerializeAsJson());
+			this.zkClient.CreateEphemeralPathExpectConflict(dirs.ConsumerRegistryDir + "/" + consumerIdString, consumerRegistrationInfo.SerializeAsJson());
             Logger.InfoFormat(CultureInfo.CurrentCulture, "end registering consumer {0} in ZK", consumerIdString);
         }
         
